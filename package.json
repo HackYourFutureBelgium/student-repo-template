@@ -5,7 +5,7 @@
   "scripts": {
     "fetch:student": "node .admin/scripts/fetch-avatar.js",
     "populate:modules": "node .admin/scripts/populate.js modules",
-    "render:modules": "node .admin/scripts/render-section.js modules && prettier --write ./README.md",
+    "render:modules": "node .admin/scripts/render-section.js modules",
     "render:header": "node .admin/scripts/render-header.js",
     "render": "npm run render:header && npm run render:modules",
     "format": "prettier --write ./",
