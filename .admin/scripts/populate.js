@@ -32,45 +32,49 @@ rl.question[promisify.custom] = (question) => {
   if (abortInput.toLowerCase() !== "yes") {
     process.exit(0);
   }
+
+
+  const mainData = require("../data/index.json");
+  const orgURL = `https://github.com/${mainData.orgName}`;
+  const homeRepoURL = `${orgURL}/${mainData.homeRepoName}`;
+
+  const whichOnes = process.argv[2];
+
+  const modules = JSON.parse(
+    fs.readFileSync(path.join(__dirname, `../data/${whichOnes}.json`), "utf8")
+  );
+
+  const basePath = path.join(__dirname, `..`, "..");
+  if (!fs.existsSync(basePath)) {
+    fs.mkdirSync(basePath);
+  }
+
+  for (const module of modules) {
+    const modulePath = path.join(basePath, module.name);
+    fs.mkdir(modulePath, (err) => {
+      if (err && err.code !== "EEXIST") {
+        console.error(err);
+        return;
+      }
+
+      const moduleReadmeStarter = `# ${module.name
+        .split("-")
+        .map((word) => word[0].toUpperCase() + word.slice(1))
+        .join(" ")}
+  `;
+      const moduleReadmePath = path.join(modulePath, "README.md");
+      fs.writeFile(moduleReadmePath, moduleReadmeStarter, "utf-8", (err) =>
+        err ? console.error(err) : null
+      );
+
+      const moduleRetroStarter = ``;
+      const moduleRetroPath = path.join(modulePath, "retrospective.md");
+      fs.writeFile(moduleRetroPath, moduleRetroStarter, "utf-8", (err) =>
+        err ? console.error(err) : null
+      );
+    });
+  }
+
+
 })();
 
-const mainData = require("../data/index.json");
-const orgURL = `https://github.com/${mainData.orgName}`;
-const homeRepoURL = `${orgURL}/${mainData.homeRepoName}`;
-
-const whichOnes = process.argv[2];
-
-const modules = JSON.parse(
-  fs.readFileSync(path.join(__dirname, `../data/${whichOnes}.json`), "utf8")
-);
-
-const basePath = path.join(__dirname, `..`, "..");
-if (!fs.existsSync(basePath)) {
-  fs.mkdirSync(basePath);
-}
-
-for (const module of modules) {
-  const modulePath = path.join(basePath, module.name);
-  fs.mkdir(modulePath, (err) => {
-    if (err && err.code !== "EEXIST") {
-      console.error(err);
-      return;
-    }
-
-    const moduleReadmeStarter = `# ${module.name
-      .split("-")
-      .map((word) => word[0].toUpperCase() + word.slice(1))
-      .join(" ")}
-`;
-    const moduleReadmePath = path.join(modulePath, "README.md");
-    fs.writeFile(moduleReadmePath, moduleReadmeStarter, "utf-8", (err) =>
-      err ? console.error(err) : null
-    );
-
-    const moduleRetroStarter = ``;
-    const moduleRetroPath = path.join(modulePath, "retrospective.md");
-    fs.writeFile(moduleRetroPath, moduleRetroStarter, "utf-8", (err) =>
-      err ? console.error(err) : null
-    );
-  });
-}
